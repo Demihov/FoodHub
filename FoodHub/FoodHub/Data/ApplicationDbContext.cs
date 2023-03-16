@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace FoodHub.Data
 {
@@ -18,10 +19,29 @@ namespace FoodHub.Data
 			base.OnModelCreating(builder);
 
 			builder.Entity<BusinessUser>()
-				.ToTable("BusinessUsers");
+			.ToTable("BusinessUsers");
+
+			builder.Entity<Product>().HasKey(p => p.Id);
+
+			builder.Entity<CartItem>()
+				.HasOne(ci => ci.Product)
+				.WithMany()
+				.HasForeignKey(ci => ci.ProductId);
+
+			builder.Entity<Cart>()
+			    .HasMany(c => c.CartItems)
+			    .WithOne()
+			    .HasForeignKey(ci => ci.CartId);
 		}
 
 		public DbSet<BusinessUser> BusinessUsers { get; set; }
 		public DbSet<CustomerUser> CustomerUsers { get; set; }
+
+		public DbSet<Product> Products { get; set; }
+		public DbSet<Order> Orders { get; set; }
+		public DbSet<OrderItem> OrderItems { get; set; }
+
+		public DbSet<Cart> Carts { get; set; }
+		public DbSet<CartItem> CartItems { get; set; }
 	}
 }
